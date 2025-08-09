@@ -139,7 +139,7 @@ const Projects = () => {
           {filteredProjects.map((project, index) => (
             <Card 
               key={project.id} 
-              className={`relative p-6 card-hover h-full card-hover ${project.featured ? 'gradient-border' : ''}`}
+              className={`relative p-6 card-hover h-full flex flex-col ${project.featured ? 'gradient-border' : ''}`}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="flex justify-between items-start mb-4">
