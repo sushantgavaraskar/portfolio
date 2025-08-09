@@ -25,20 +25,46 @@ const Contact = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const CONTACT_ENDPOINT = (import.meta.env.VITE_CONTACT_ENDPOINT as string | undefined) || 'https://formspree.io/f/mnnzlqwz';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    try {
+      const payload = new FormData();
+      payload.append('name', formData.name);
+      payload.append('email', formData.email);
+      payload.append('message', formData.message);
+      payload.append('subject', formData.subject);
+      payload.append('_subject', `Portfolio Contact: ${formData.subject}`);
 
-    // Simulate form submission
-    setTimeout(() => {
+      const response = await fetch(CONTACT_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+        },
+        body: payload,
+      });
+
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null);
+        throw new Error(errorPayload?.message || `Request failed (${response.status})`);
+      }
+
       toast({
-        title: "Message sent!",
+        title: 'Message sent!',
         description: "Thank you for your message. I'll get back to you soon!",
       });
       setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      toast({
+        title: 'Failed to send',
+        description: message,
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -61,10 +87,10 @@ const Contact = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-stretch">
           {/* Contact Information */}
-          <div className="lg:col-span-2">
-            <Card className="p-8 card-hover">
+          <div className="lg:col-span-2 h-full flex flex-col">
+            <Card className="p-8 card-hover h-full flex flex-col">
               <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
               
               <div className="space-y-6">
@@ -153,21 +179,11 @@ const Contact = () => {
               </div>
             </Card>
 
-            {/* Availability Card */}
-            <Card className="p-6 mt-8 card-hover bg-gradient-to-br from-accent/10 to-primary/10 border-accent/20">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <h3 className="font-semibold">Available for Work</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                I'm currently open to backend-focused internships and freelance opportunities.
-              </p>
-            </Card>
           </div>
 
           {/* Contact Form */}
-          <div className="lg:col-span-3">
-            <Card className="p-8 card-hover">
+          <div className="lg:col-span-3 h-full">
+            <Card className="p-8 card-hover h-full flex flex-col">
               <div className="flex items-center gap-3 mb-6">
                 <MessageSquare className="text-accent" size={24} />
                 <h2 className="text-2xl font-bold">Send me a message</h2>
@@ -243,17 +259,20 @@ const Contact = () => {
                   )}
                 </Button>
               </form>
-
-              <div className="mt-6 p-4 bg-muted/20 rounded-lg">
-                <p className="text-sm text-muted-foreground">
-                  <strong>Note:</strong> This form is for demonstration purposes. 
-                  In a real implementation, you would integrate with a service like 
-                  EmailJS, Formspree, or your own backend to handle form submissions.
-                </p>
-              </div>
             </Card>
           </div>
         </div>
+
+        {/* Availability Card (moved below grid to keep equal heights in the top row) */}
+        <Card className="p-6 mt-8 card-hover bg-gradient-to-br from-accent/10 to-primary/10 border-accent/20">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            <h3 className="font-semibold">Available for Work</h3>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            I'm currently open to backend-focused internships and freelance opportunities.
+          </p>
+        </Card>
 
         {/* FAQ Section */}
         <Card className="p-8 mt-16 card-hover">
