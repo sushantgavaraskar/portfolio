@@ -182,7 +182,7 @@ const Contact = () => {
           </div>
 
           {/* Contact Form */}
-          <div className="lg:col-span-3 h-full">
+          <div className="lg:col-span-3 h-full flex flex-col">
             <Card className="p-8 card-hover h-full flex flex-col">
               <div className="flex items-center gap-3 mb-6">
                 <MessageSquare className="text-accent" size={24} />
@@ -259,6 +259,17 @@ const Contact = () => {
                   )}
                 </Button>
               </form>
+            </Card>
+
+            {/* Right-side supplemental card to balance layout */}
+            <Card className="p-6 mt-8 card-hover">
+              <h3 className="font-semibold mb-2">What to include</h3>
+              <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
+                <li>Project goals and scope</li>
+                <li>Preferred tech stack or constraints</li>
+                <li>Timeline and budget (if applicable)</li>
+                <li>Preferred contact method and availability</li>
+              </ul>
             </Card>
           </div>
         </div>
